@@ -1,0 +1,504 @@
+Disassembly Listing for LEDTest
+Generated From:
+/home/donovan/MPLABXProjects/LEDTest.X/dist/default/production/LEDTest.X.production.elf
+Feb 28, 2019 10:50:09 PM
+
+---  /home/donovan/MPLABXProjects/LEDTest.X/newmainXC16.c  ----------------------------------------------
+1:                 
+2:                 // PIC24F32KA302 Configuration Bit Settings
+3:                 
+4:                 // 'C' source line config statements
+5:                 
+6:                 // FBS
+7:                 #pragma config BWRP = OFF               // Boot Segment Write Protect (Disabled)
+8:                 #pragma config BSS = OFF                // Boot segment Protect (No boot program flash segment)
+9:                 
+10:                // FGS
+11:                #pragma config GWRP = OFF               // General Segment Write Protect (General segment may be written)
+12:                #pragma config GSS0 = OFF               // General Segment Code Protect (No Protection)
+13:                
+14:                // FOSCSEL
+15:                #pragma config FNOSC = FRCPLL           // Oscillator Select (Fast RC Oscillator with Postscaler and PLL Module (FRCDIV+PLL))
+16:                #pragma config SOSCSRC = ANA            // SOSC Source Type (Analog Mode for use with crystal)
+17:                #pragma config LPRCSEL = HP             // LPRC Oscillator Power and Accuracy (High Power, High Accuracy Mode)
+18:                #pragma config IESO = OFF               // Internal External Switch Over bit (Internal External Switchover mode disabled (Two-speed Start-up disabled))
+19:                
+20:                // FOSC
+21:                #pragma config POSCMOD = NONE           // Primary Oscillator Configuration bits (Primary oscillator disabled)
+22:                #pragma config OSCIOFNC = OFF           // CLKO Enable Configuration bit (CLKO output disabled)
+23:                #pragma config POSCFREQ = HS            // Primary Oscillator Frequency Range Configuration bits (Primary oscillator/external clock input frequency greater than 8MHz)
+24:                #pragma config SOSCSEL = SOSCHP         // SOSC Power Selection Configuration bits (Secondary Oscillator configured for high-power operation)
+25:                #pragma config FCKSM = CSDCMD           // Clock Switching and Monitor Selection (Both Clock Switching and Fail-safe Clock Monitor are disabled)
+26:                
+27:                // FWDT
+28:                #pragma config WDTPS = PS32768          // Watchdog Timer Postscale Select bits (1:32768)
+29:                #pragma config FWPSA = PR128            // WDT Prescaler bit (WDT prescaler ratio of 1:128)
+30:                #pragma config FWDTEN = OFF             // Watchdog Timer Enable bits (WDT disabled in hardware; SWDTEN bit disabled)
+31:                #pragma config WINDIS = OFF             // Windowed Watchdog Timer Disable bit (Standard WDT selected(windowed WDT disabled))
+32:                
+33:                // FPOR
+34:                #pragma config BOREN = BOR3             // Brown-out Reset Enable bits (Brown-out Reset enabled in hardware, SBOREN bit disabled)
+35:                #pragma config LVRCFG = OFF             // Low Voltage Regulator Configuration bit (Low Voltage regulator is not available)
+36:                #pragma config PWRTEN = ON              // Power-up Timer Enable bit (PWRT enabled)
+37:                #pragma config I2C1SEL = PRI            // Alternate I2C1 Pin Mapping bit (Use Default SCL1/SDA1 Pins For I2C1)
+38:                #pragma config BORV = V18               // Brown-out Reset Voltage bits (Brown-out Reset set to lowest voltage (1.8V))
+39:                #pragma config MCLRE = ON               // MCLR Pin Enable bit (RA5 input pin disabled,MCLR pin enabled)
+40:                
+41:                // FICD
+42:                #pragma config ICS = PGx1               // ICD Pin Placement Select bits (EMUC/EMUD share PGC1/PGD1)
+43:                
+44:                // FDS
+45:                #pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
+46:                #pragma config DSWDTOSC = LPRC          // DSWDT Reference Clock Select bit (DSWDT uses Low Power RC Oscillator (LPRC))
+47:                #pragma config DSBOREN = ON             // Deep Sleep Zero-Power BOR Enable bit (Deep Sleep BOR enabled in Deep Sleep)
+48:                #pragma config DSWDTEN = ON             // Deep Sleep Watchdog Timer Enable bit (DSWDT enabled)
+49:                
+50:                // #pragma config statements should precede project file includes.
+51:                // Use project enums instead of #define for ON and OFF.
+52:                
+53:                #include <xc.h>
+54:                #define FCY 16000000
+55:                #include <libpic30.h>
+56:                
+57:                uint16_t LOOKUP[256] = 
+58:                {
+59:                32768,
+60:                33572,
+61:                34375,
+62:                35178,
+63:                35979,
+64:                36779,
+65:                37576,
+66:                38370,
+67:                39160,
+68:                39947,
+69:                40729,
+70:                41507,
+71:                42280,
+72:                43046,
+73:                43807,
+74:                44561,
+75:                45307,
+76:                46046,
+77:                46778,
+78:                47500,
+79:                48214,
+80:                48919,
+81:                49614,
+82:                50298,
+83:                50972,
+84:                51636,
+85:                52287,
+86:                52927,
+87:                53555,
+88:                54171,
+89:                54773,
+90:                55362,
+91:                55938,
+92:                56500,
+93:                57047,
+94:                57580,
+95:                58098,
+96:                58600,
+97:                59087,
+98:                59558,
+99:                60013,
+100:               60452,
+101:               60874,
+102:               61279,
+103:               61666,
+104:               62037,
+105:               62389,
+106:               62724,
+107:               63041,
+108:               63340,
+109:               63620,
+110:               63882,
+111:               64125,
+112:               64349,
+113:               64553,
+114:               64739,
+115:               64906,
+116:               65053,
+117:               65181,
+118:               65289,
+119:               65378,
+120:               65447,
+121:               65496,
+122:               65526,
+123:               65535,
+124:               65526,
+125:               65496,
+126:               65447,
+127:               65378,
+128:               65289,
+129:               65181,
+130:               65053,
+131:               64906,
+132:               64739,
+133:               64553,
+134:               64349,
+135:               64125,
+136:               63882,
+137:               63620,
+138:               63340,
+139:               63041,
+140:               62724,
+141:               62389,
+142:               62037,
+143:               61666,
+144:               61279,
+145:               60874,
+146:               60452,
+147:               60013,
+148:               59558,
+149:               59087,
+150:               58600,
+151:               58098,
+152:               57580,
+153:               57047,
+154:               56500,
+155:               55938,
+156:               55362,
+157:               54773,
+158:               54171,
+159:               53555,
+160:               52927,
+161:               52287,
+162:               51636,
+163:               50972,
+164:               50298,
+165:               49614,
+166:               48919,
+167:               48214,
+168:               47500,
+169:               46778,
+170:               46046,
+171:               45307,
+172:               44561,
+173:               43807,
+174:               43046,
+175:               42280,
+176:               41507,
+177:               40729,
+178:               39947,
+179:               39160,
+180:               38370,
+181:               37576,
+182:               36779,
+183:               35979,
+184:               35178,
+185:               34375,
+186:               33572,
+187:               32768,
+188:               31963,
+189:               31160,
+190:               30357,
+191:               29556,
+192:               28756,
+193:               27959,
+194:               27165,
+195:               26375,
+196:               25588,
+197:               24806,
+198:               24028,
+199:               23255,
+200:               22489,
+201:               21728,
+202:               20974,
+203:               20228,
+204:               19489,
+205:               18757,
+206:               18035,
+207:               17321,
+208:               16616,
+209:               15921,
+210:               15237,
+211:               14563,
+212:               13899,
+213:               13248,
+214:               12608,
+215:               11980,
+216:               11364,
+217:               10762,
+218:               10173,
+219:               9597,
+220:               9035,
+221:               8488,
+222:               7955,
+223:               7437,
+224:               6935,
+225:               6448,
+226:               5977,
+227:               5522,
+228:               5083,
+229:               4661,
+230:               4256,
+231:               3869,
+232:               3498,
+233:               3146,
+234:               2811,
+235:               2494,
+236:               2195,
+237:               1915,
+238:               1653,
+239:               1410,
+240:               1186,
+241:               982,
+242:               796,
+243:               629,
+244:               482,
+245:               354,
+246:               246,
+247:               157,
+248:               88,
+249:               39,
+250:               9,
+251:               0,
+252:               9,
+253:               39,
+254:               88,
+255:               157,
+256:               246,
+257:               354,
+258:               482,
+259:               629,
+260:               796,
+261:               982,
+262:               1186,
+263:               1410,
+264:               1653,
+265:               1915,
+266:               2195,
+267:               2494,
+268:               2811,
+269:               3146,
+270:               3498,
+271:               3869,
+272:               4256,
+273:               4661,
+274:               5083,
+275:               5522,
+276:               5977,
+277:               6448,
+278:               6935,
+279:               7437,
+280:               7955,
+281:               8488,
+282:               9035,
+283:               9597,
+284:               10173,
+285:               10762,
+286:               11364,
+287:               11980,
+288:               12608,
+289:               13248,
+290:               13899,
+291:               14563,
+292:               15237,
+293:               15921,
+294:               16616,
+295:               17321,
+296:               18035,
+297:               18757,
+298:               19489,
+299:               20228,
+300:               20974,
+301:               21728,
+302:               22489,
+303:               23255,
+304:               24028,
+305:               24806,
+306:               25588,
+307:               26375,
+308:               27165,
+309:               27959,
+310:               28756,
+311:               29556,
+312:               30357,
+313:               31160,
+314:               31963
+315:               };
+316:               
+317:               //To represent a certain frequency, increment through indices at a rate of
+318:               //2.048 * Hz per sample
+319:               uint16_t sine_approx(uint16_t index)
+320:               {
+00042C  FA000C     LNK #0xC
+00042E  980750     MOV W0, [W14+10]
+321:                   long bigVal = LOOKUP[index >> 8];
+000430  90005E     MOV [W14+10], W0
+000432  DE0048     LSR W0, #8, W0
+000434  400080     ADD W0, W0, W1
+000436  208000     MOV #0x800, W0
+000438  408000     ADD W1, W0, W0
+00043A  780010     MOV [W0], W0
+00043C  EB0080     CLR W1
+00043E  BE8F00     MOV.D W0, [W14]
+322:                   long bigVal2 = LOOKUP[(unsigned char)((index >> 8) + 1)];
+000440  90005E     MOV [W14+10], W0
+000442  DE0048     LSR W0, #8, W0
+000444  784000     MOV.B W0, W0
+000446  E84000     INC.B W0, W0
+000448  FB8000     ZE W0, W0
+00044A  400080     ADD W0, W0, W1
+00044C  208000     MOV #0x800, W0
+00044E  408000     ADD W1, W0, W0
+000450  780010     MOV [W0], W0
+000452  EB0080     CLR W1
+000454  980720     MOV W0, [W14+4]
+000456  980731     MOV W1, [W14+6]
+323:               
+324:                   int smallVal = ((int)(index & 0x00FF) * (int)(bigVal2 - bigVal)) >> 8;
+000458  9000DE     MOV [W14+10], W1
+00045A  200FF0     MOV #0xFF, W0
+00045C  608080     AND W1, W0, W1
+00045E  90012E     MOV [W14+4], W2
+000460  78001E     MOV [W14], W0
+000462  510000     SUB W2, W0, W0
+000464  B98800     MUL.SS W1, W0, W0
+000466  780000     MOV W0, W0
+000468  DE8048     ASR W0, #8, W0
+00046A  980740     MOV W0, [W14+8]
+325:               
+326:                   return bigVal + smallVal;
+00046C  78009E     MOV [W14], W1
+00046E  90004E     MOV [W14+8], W0
+000470  408000     ADD W1, W0, W0
+327:               }
+000472  FA8000     ULNK
+000474  060000     RETURN
+328:               
+329:               void init_SPI()
+330:               {
+000476  FA0000     LNK #0x0
+331:                   //disable SPI (req for configuration)
+332:                   SPI1STATbits.SPIEN = 0;
+000478  A9E241     BCLR 0x241, #7
+333:                   
+334:                   IFS0bits.SPI1IF 		= 0;	// clear interrupt flag
+00047A  A94085     BCLR 0x85, #2
+335:                   IEC0bits.SPI1IE 		= 0;	// disable interrupt
+00047C  A94095     BCLR 0x95, #2
+336:               
+337:                   //clear config registers
+338:                   SPI1CON1 = 0x0000;
+00047E  EF2242     CLR SPI1CON1
+339:                   SPI1CON2 = 0x0000;
+000480  EF2244     CLR SPI1CON2
+340:                   
+341:                   //set word size on SPI bus to 16 (12 bit DAC)
+342:                   SPI1CON1bits.MODE16 = 1;
+000482  A84243     BSET 0x243, #2
+343:                   //set us to SPI master
+344:                   SPI1CON1bits.MSTEN = 1;
+000484  A8A242     BSET SPI1CON1, #5
+345:                   //configure oscillator scaling (1/2 of Fcy)
+346:                   SPI1CON1bits.PPRE = 0b11;
+000486  801210     MOV SPI1CON1, W0
+000488  B30030     IOR #0x3, W0
+00048A  881210     MOV W0, SPI1CON1
+347:                   SPI1CON1bits.SPRE = 0b110;
+00048C  801211     MOV SPI1CON1, W1
+00048E  2FFE30     MOV #0xFFE3, W0
+000490  608000     AND W1, W0, W0
+000492  B30180     IOR #0x18, W0
+000494  881210     MOV W0, SPI1CON1
+348:                   
+349:                   //required by datasheet (still unsure why)
+350:                   SPI1STATbits.SPIROV = 0;
+000496  A9C240     BCLR SPI1STAT, #6
+351:                   //enable SPI
+352:                   SPI1STATbits.SPIEN = 1;
+000498  A8E241     BSET 0x241, #7
+353:                   
+354:                   //drive CS and latch pins active high
+355:                   TRISBbits.TRISB9 = 0;
+00049A  A922C9     BCLR 0x2C9, #1
+356:                   TRISBbits.TRISB8 = 0;
+00049C  A902C9     BCLR 0x2C9, #0
+357:                   PORTBbits.RB9 = 1;
+00049E  A822CB     BSET 0x2CB, #1
+358:                   PORTBbits.RB8 = 1;
+0004A0  A802CB     BSET 0x2CB, #0
+359:               }
+0004A2  FA8000     ULNK
+0004A4  060000     RETURN
+360:               
+361:               void SPI_write(uint16_t data)
+362:               {
+0004A6  FA0004     LNK #0x4
+0004A8  980710     MOV W0, [W14+2]
+363:                   //DAC is 12 bits, so shift value and add config bits
+364:                   data = data >> 4;
+0004AA  90001E     MOV [W14+2], W0
+0004AC  DE0044     LSR W0, #4, W0
+0004AE  980710     MOV W0, [W14+2]
+365:                   data = data | 0b0111000000000000;
+0004B0  90009E     MOV [W14+2], W1
+0004B2  270000     MOV #0x7000, W0
+0004B4  700001     IOR W0, W1, W0
+0004B6  980710     MOV W0, [W14+2]
+366:                   //drive CS active low for start
+367:                   PORTBbits.RB9 = 0;
+0004B8  A922CB     BCLR 0x2CB, #1
+368:                   SPI1BUF = data;
+0004BA  90009E     MOV [W14+2], W1
+0004BC  881241     MOV W1, SPI1BUF
+369:                   //wait for transfer to finish
+370:                   short i;
+371:                   for(i = 0; i < 100; i++);
+0004BE  EB0000     CLR W0
+0004C0  780F00     MOV W0, [W14]
+0004C2  370001     BRA .L4
+0004C4  E80F1E     INC [W14], [W14]
+0004C6  200630     MOV #0x63, W0
+0004C8  78009E     MOV [W14], W1
+0004CA  508F80     SUB W1, W0, [W15]
+0004CC  34FFFB     BRA LE, .L5
+372:                   PORTBbits.RB9 = 1;
+0004CE  A822CB     BSET 0x2CB, #1
+373:               }
+0004D0  FA8000     ULNK
+0004D2  060000     RETURN
+374:               
+375:               //open latch when audio sample should be produced by DAC
+376:               void update_latch()
+377:               {
+0004D4  FA0000     LNK #0x0
+378:                   PORTBbits.RB8 = 0;
+0004D6  A902CB     BCLR 0x2CB, #0
+379:                   //required delay
+380:                   __builtin_nop();
+0004D8  000000     NOP
+381:                   __builtin_nop();
+0004DA  000000     NOP
+382:                   __builtin_nop();
+0004DC  000000     NOP
+383:                   PORTBbits.RB8 = 1;
+0004DE  A802CB     BSET 0x2CB, #0
+384:               }
+0004E0  FA8000     ULNK
+0004E2  060000     RETURN
+385:               
+386:               int main()
+387:               {
+0004E4  FA0002     LNK #0x2
+388:                   init_SPI();
+0004E6  07FFC7     RCALL init_SPI
+389:                   uint16_t val;
+390:                   while(1)
+391:                   {
+392:                       val += 5000;
+0004E8  213880     MOV #0x1388, W0
+0004EA  400F1E     ADD W0, [W14], [W14]
+393:                       SPI_write(sine_approx(val));
+0004EC  78001E     MOV [W14], W0
+0004EE  07FF9E     RCALL sine_approx
+0004F0  07FFDA     RCALL SPI_write
+394:                       update_latch();
+0004F2  07FFF0     RCALL update_latch
+395:                   }
+0004F4  37FFF9     BRA .L8
+396:                   return 0;
+397:               }
