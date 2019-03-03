@@ -54,6 +54,10 @@
 #define FCY 16000000
 #include <libpic30.h>
 
+//this allows 500 instructions to pass between each sample sent
+//should make samples at 32kHz
+#define TIMER_RESET_VAL 65035
+
 uint16_t LOOKUP[256] = 
 {
 32768,
@@ -314,6 +318,10 @@ uint16_t LOOKUP[256] =
 31963
 };
 
+uint16_t currentSample = 0;
+//set to 1 whenever controller is ready to produce another sample
+volatile uint16_t nextSample = 1;
+
 //To represent a certain frequency, increment through indices at a rate of
 //2.048 * Hz per sample
 uint16_t sine_approx(uint16_t index)
@@ -346,15 +354,16 @@ void init_SPI()
     SPI1CON1bits.PPRE = 0b11;
     SPI1CON1bits.SPRE = 0b110;
     
+    //set framing for SPI signal on SS1 pin
+    SPI1CON2bits.FRMEN = 1;
+    
     //required by datasheet (still unsure why)
     SPI1STATbits.SPIROV = 0;
     //enable SPI
     SPI1STATbits.SPIEN = 1;
     
-    //drive CS and latch pins active high
-    TRISBbits.TRISB9 = 0;
+    //drive latch pin active high
     TRISBbits.TRISB8 = 0;
-    PORTBbits.RB9 = 1;
     PORTBbits.RB8 = 1;
 }
 
@@ -363,13 +372,19 @@ void SPI_write(uint16_t data)
     //DAC is 12 bits, so shift value and add config bits
     data = data >> 4;
     data = data | 0b0111000000000000;
-    //drive CS active low for start
-    PORTBbits.RB9 = 0;
     SPI1BUF = data;
-    //wait for transfer to finish
-    short i;
-    for(i = 0; i < 100; i++);
-    PORTBbits.RB9 = 1;
+    //processor will continue to write to SPI in background
+}
+
+//setup timer to send samples to DAC at 32kHz
+void setup_timer()
+{
+    //enable timer
+    PR1 = TIMER_RESET_VAL;
+    T1CONbits.TON = 1;
+    //reset and enable timer interrupt
+    IFS0bits.T1IF = 0;
+    IEC0bits.T1IE = 1;
 }
 
 //open latch when audio sample should be produced by DAC
@@ -383,14 +398,34 @@ void update_latch()
     PORTBbits.RB8 = 1;
 }
 
+void __attribute__((interrupt, no_auto_psv)) _T1Interrupt(void)
+{
+    //reset interrupt
+    IFS0bits.T1IF = 0;
+    //reset timer
+    PR1 = TIMER_RESET_VAL;
+    //let main function know we are ready to make another sample
+    nextSample = 1;
+}
+
 int main()
 {
     init_SPI();
+    setup_timer();
     uint16_t val;
+    
     while(1)
     {
         val += 5000;
-        SPI_write(sine_approx(val));
+        currentSample = sine_approx(val);
+        //wait for sample interrupt
+        while(!nextSample)
+        {
+            __builtin_nop();
+        }
+        nextSample = 0;
+        //send sample to DAC
+        SPI_write(currentSample);
         update_latch();
     }
     return 0;
