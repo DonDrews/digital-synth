@@ -56,7 +56,7 @@
 
 //this allows 500 instructions to pass between each sample sent
 //should make samples at 32kHz
-#define TIMER_RESET_VAL 65035
+#define TIMER_RESET_VAL 500
 
 uint16_t LOOKUP[256] = 
 {
@@ -354,17 +354,16 @@ void init_SPI()
     SPI1CON1bits.PPRE = 0b11;
     SPI1CON1bits.SPRE = 0b110;
     
-    //set framing for SPI signal on SS1 pin
-    SPI1CON2bits.FRMEN = 1;
-    
     //required by datasheet (still unsure why)
     SPI1STATbits.SPIROV = 0;
     //enable SPI
     SPI1STATbits.SPIEN = 1;
     
-    //drive latch pin active high
+    //drive latch and CS pin active high
     TRISBbits.TRISB8 = 0;
+    TRISBbits.TRISB9 = 0;
     PORTBbits.RB8 = 1;
+    PORTBbits.RB9 = 1;
 }
 
 void SPI_write(uint16_t data)
@@ -372,8 +371,18 @@ void SPI_write(uint16_t data)
     //DAC is 12 bits, so shift value and add config bits
     data = data >> 4;
     data = data | 0b0111000000000000;
+    
+    //dummy read of SPI buffer to clear RX flag
+    uint16_t dummy = SPI1BUF;
+    
+    //drive CS pin low
+    PORTBbits.RB9 = 0;
+    //begin transmission of data
     SPI1BUF = data;
-    //processor will continue to write to SPI in background
+    //wait for transmission to finish <50 clocks
+    while(!SPI1STATbits.SPIRBF);
+    //drive CS high again
+    PORTBbits.RB9 = 1;
 }
 
 //setup timer to send samples to DAC at 32kHz
@@ -416,8 +425,8 @@ int main()
     
     while(1)
     {
-        val += 5000;
-        currentSample = sine_approx(val);
+        val += 2048;
+        currentSample = val;//sine_approx(val);
         //wait for sample interrupt
         while(!nextSample)
         {
